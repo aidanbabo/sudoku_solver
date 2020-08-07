@@ -1,4 +1,5 @@
-use sudoku::{pint, sudoku};
+use sudoku::sorted::sudoku;
+use sudoku::pint;
 
 fn main() {
     let mut s = [
