@@ -1,5 +1,4 @@
-pub mod sorted;
-pub mod basic;
+pub mod solvers;
 
 pub type Table = [[usize; 9]; 9];
 

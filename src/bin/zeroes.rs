@@ -1,4 +1,4 @@
-use sudoku::sorted::sudoku;
+use sudoku::solvers::sorted::sudoku;
 use sudoku::pint;
 
 fn main() {
@@ -6,4 +6,3 @@ fn main() {
     sudoku(&mut s);
     pint(&s);
 }
-
