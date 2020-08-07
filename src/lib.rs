@@ -1,4 +1,5 @@
 pub mod solvers;
+pub mod file_reader;
 
 pub type Table = [[usize; 9]; 9];
 
