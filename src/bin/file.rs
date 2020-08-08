@@ -9,6 +9,7 @@ fn main() -> io::Result<()> {
     for mut s in sudokus {
         sudoku(&mut s);
         pint(&s);
+        println!();
     }
     Ok(())
 }

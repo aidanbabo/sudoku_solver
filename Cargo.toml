@@ -3,7 +3,7 @@ name = "sudoku"
 version = "0.1.0"
 authors = ["aidanbabo <aidan.babo@gmail.com>"]
 edition = "2018"
-default-run = "first"
+default-run = "file"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
