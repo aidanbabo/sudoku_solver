@@ -1,3 +1,4 @@
+use std::mem::{self, MaybeUninit};
 use crate::Table;
 
 pub fn sudoku(table: &mut Table) -> bool {
@@ -8,13 +9,15 @@ pub fn sudoku(table: &mut Table) -> bool {
 fn solve(table: &mut Table, entries: &mut Entries) -> bool {
     if let Some((y, x, v)) = entries.min() {
         for p in v {
-            table[y][x] = p; // `entries` here
+            table[y][x] = p; 
+            // `entries` here
             entries.update(table, (y, x));
             if solve(table, entries) {
                 return true;
             }
             table[y][x] = 0;
-            entries.update(table, (y, x)); // is equal to `entries` here
+            // is equal to `entries` here
+            entries.update(table, (y, x)); 
         }
         false
     } else {
@@ -28,17 +31,14 @@ struct Entries {
 
 impl Entries {
     pub fn from_table(table: &Table) -> Self {
-        use std::mem::{self, MaybeUninit};
         // Some unsafe code to incrementally initialize the array
         Entries {
             entries: {
-                let mut entries: [[MaybeUninit<Entry>; 9]; 9] = unsafe {
-                    MaybeUninit::uninit().assume_init()
-                };
+                let mut entries: [[MaybeUninit<Entry>; 9]; 9] = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..entries.len() {
                     for j in 0..entries[i].len() {
                         entries[i][j] = if table[i][j] == 0 {
-                            MaybeUninit::new(Entry { possibles: Some(Possibles::iter(table, i, j).collect()) })
+                            MaybeUninit::new(Entry { possibles: Some(possibles(table, i, j)) })
                         } else {
                             MaybeUninit::new(Entry { possibles: None })
                         }
@@ -49,6 +49,7 @@ impl Entries {
         }
     }
 
+    // Lot of duplicate calls to update possibles
     pub fn update(&mut self, table: &Table, (row, col): (usize, usize)) {
         for i in 0..9 {
             self.update_possibles(table, row, i);
@@ -65,7 +66,7 @@ impl Entries {
 
     fn update_possibles(&mut self, table: &Table, row: usize, col: usize) {
         self.entries[row][col].possibles = if table[row][col] == 0 {
-            Some(Possibles::iter(table, row, col).collect())
+            Some(possibles(table, row, col))
         } else {
             None
         }
@@ -89,6 +90,32 @@ impl Entries {
     }
 }
 
+pub fn possibles(table: &Table, y: usize, x: usize) -> Vec<usize> {
+    let mut v = Vec::new();
+    // [y][x] is 0
+    for i in 0..9 {
+        if table[y][i] != 0 {
+            v.push(table[y][i]);
+        }
+        if table[i][x] != 0 {
+            v.push(table[i][x]);
+        }
+    }
+    let sy = y / 3;
+    let sx = x / 3;
+    // let py = y % 3;
+    // let py = y % 3;
+    for i in 0..3 {
+        for j in 0..3 {
+            if table[sy+i][sx+j] != 0 {
+                v.push(table[sy+i][sx+j])
+            }
+        }
+    }
+    v.dedup();
+    v
+}
+
 struct Entry {
     possibles: Option<Vec<usize>>,
 }
@@ -99,65 +126,6 @@ impl Entry {
             Some(ref v) => v.len(),
             None => usize::MAX,
         }
-    }
-}
-
-struct Possibles<'a> {
-    current: usize,
-    table: &'a Table,
-    y: usize,
-    x: usize,
-}
-
-impl<'a> Possibles<'a> {
-    pub fn iter(table: &'a Table, y: usize, x: usize) -> Self {
-        Possibles {
-            current: 1,
-            table,
-            y,
-            x,
-        }
-    }
-
-    fn possible(&self, p: usize) -> bool {
-        for i in 0..9 {
-            if self.table[self.y][i] == p {
-                return false;
-            }
-            if self.table[i][self.x] == p {
-                return false;
-            }
-        }
-        let x = self.x / 3 * 3;
-        let y = self.y / 3 * 3;
-        for i in 0..3 {
-            for j in 0..3 {
-                if self.table[y+i][x+j] == p {
-                    return false;
-                }
-            }
-        }
-        true
-    }
-}
-
-impl<'a> Iterator for Possibles<'a> {
-    type Item = usize;
-    fn next(&mut self) -> Option<Self::Item> {
-        while self.current <= 9 {
-            if self.possible(self.current) {
-                let next = self.current;
-                self.current += 1;
-                return Some(next);
-            } else {
-                self.current += 1;
-            }
-        }
-        None
-    }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        (0, Some(9))
     }
 }
 
