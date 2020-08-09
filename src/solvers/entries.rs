@@ -10,13 +10,11 @@ fn solve(table: &mut Table, entries: &mut Entries) -> bool {
     if let Some((y, x, v)) = entries.min() {
         for p in v {
             table[y][x] = p; 
-            // `entries` here
             entries.update(table, (y, x));
             if solve(table, entries) {
                 return true;
             }
             table[y][x] = 0;
-            // is equal to `entries` here
             entries.update(table, (y, x)); 
         }
         false
