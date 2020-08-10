@@ -1,5 +1,6 @@
 use std::mem::{self, MaybeUninit};
 use crate::Table;
+use crate::solvers::basic::Possibles;
 
 pub fn sudoku(table: &mut Table) -> bool {
     let mut entries = Entries::from_table(table);
@@ -36,7 +37,7 @@ impl Entries {
                 for i in 0..entries.len() {
                     for j in 0..entries[i].len() {
                         entries[i][j] = if table[i][j] == 0 {
-                            MaybeUninit::new(Entry { possibles: Some(possibles(table, i, j)) })
+                            MaybeUninit::new(Entry { possibles: Some(Possibles::iter(table.clone(), i, j).collect()) })
                         } else {
                             MaybeUninit::new(Entry { possibles: None })
                         }
@@ -64,7 +65,7 @@ impl Entries {
 
     fn update_possibles(&mut self, table: &Table, row: usize, col: usize) {
         self.entries[row][col].possibles = if table[row][col] == 0 {
-            Some(possibles(table, row, col))
+            Some(Possibles::iter(table.clone(), row, col).collect())
         } else {
             None
         }
@@ -88,32 +89,6 @@ impl Entries {
     }
 }
 
-pub fn possibles(table: &Table, y: usize, x: usize) -> Vec<usize> {
-    let mut v = Vec::new();
-    // [y][x] is 0
-    for i in 0..9 {
-        if table[y][i] != 0 {
-            v.push(table[y][i]);
-        }
-        if table[i][x] != 0 {
-            v.push(table[i][x]);
-        }
-    }
-    let sy = y / 3;
-    let sx = x / 3;
-    // let py = y % 3;
-    // let py = y % 3;
-    for i in 0..3 {
-        for j in 0..3 {
-            if table[sy+i][sx+j] != 0 {
-                v.push(table[sy+i][sx+j])
-            }
-        }
-    }
-    v.dedup();
-    v
-}
-
 struct Entry {
     possibles: Option<Vec<usize>>,
 }
@@ -124,44 +99,5 @@ impl Entry {
             Some(ref v) => v.len(),
             None => usize::MAX,
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    const TABLE: Table = [
-        [4, 0, 0, 0, 0, 0, 0, 0, 0],
-        [2, 8, 0, 9, 0, 0, 0, 4, 0],
-        [0, 1, 0, 0, 0, 3, 5, 0, 0],
-        [0, 0, 3, 2, 1, 0, 0, 0, 0],
-        [0, 0, 4, 7, 0, 5, 2, 0, 0],
-        [0, 0, 0, 0, 9, 8, 3, 0, 0],
-        [0, 0, 8, 1, 0, 0, 0, 3, 0],
-        [0, 5, 0, 0, 0, 4, 0, 8, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 9],
-    ];
-
-    const JON_HARD: Table = [
-        [4,0,0,0,5,0,8,0,0],
-        [0,1,8,0,0,0,7,0,0],
-        [0,0,3,0,0,4,0,0,0],
-        [9,6,0,0,0,0,0,0,0],
-        [0,0,5,0,0,3,0,0,0],
-        [0,7,0,0,0,8,0,6,0],
-        [0,0,1,6,0,0,0,0,4],
-        [0,0,0,5,0,0,0,1,3],
-        [0,0,0,8,0,0,0,0,0],
-    ];
-
-    #[test]
-    fn jon() {
-        assert!(sudoku(&mut TABLE));
-    }
-
-    #[test]
-    fn jon_hard() {
-        assert!(sudoku(&mut JON_HARD));
     }
 }

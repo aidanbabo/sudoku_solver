@@ -1,5 +1,5 @@
 use crate::Table;
-use crate::solvers::entries::possibles;
+use crate::solvers::basic::Possibles;
 
 pub fn sudoku(table: &mut Table) -> bool {
     if let Some((y, x, v)) = next_best(table) {
@@ -24,7 +24,7 @@ fn next_best(table: &Table) -> Option<(usize, usize, Vec<usize>)> {
         for x in 0..9 {
             if table[y][x] == 0 {
                 buf.clear();
-                buf.extend(possibles(table, y, x));
+                buf.extend(Possibles::iter(table.clone(), y, x));
                 if buf.len() < length {
                     length = buf.len();
                     ret = Some((y, x, buf.drain(..).collect()));
@@ -33,43 +33,4 @@ fn next_best(table: &Table) -> Option<(usize, usize, Vec<usize>)> {
         }
     }
     ret
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    const TABLE: Table = [
-        [4, 0, 0, 0, 0, 0, 0, 0, 0],
-        [2, 8, 0, 9, 0, 0, 0, 4, 0],
-        [0, 1, 0, 0, 0, 3, 5, 0, 0],
-        [0, 0, 3, 2, 1, 0, 0, 0, 0],
-        [0, 0, 4, 7, 0, 5, 2, 0, 0],
-        [0, 0, 0, 0, 9, 8, 3, 0, 0],
-        [0, 0, 8, 1, 0, 0, 0, 3, 0],
-        [0, 5, 0, 0, 0, 4, 0, 8, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 9],
-    ];
-
-    const JON_HARD: Table = [
-        [4,0,0,0,5,0,8,0,0],
-        [0,1,8,0,0,0,7,0,0],
-        [0,0,3,0,0,4,0,0,0],
-        [9,6,0,0,0,0,0,0,0],
-        [0,0,5,0,0,3,0,0,0],
-        [0,7,0,0,0,8,0,6,0],
-        [0,0,1,6,0,0,0,0,4],
-        [0,0,0,5,0,0,0,1,3],
-        [0,0,0,8,0,0,0,0,0],
-    ];
-
-    #[test]
-    fn jon() {
-        assert!(sudoku(&mut TABLE));
-    }
-
-    #[test]
-    fn jon_hard() {
-        assert!(sudoku(&mut JON_HARD));
-    }
 }
