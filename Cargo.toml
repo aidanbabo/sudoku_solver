@@ -13,17 +13,17 @@ default-run = "file"
 criterion = "0.3"
 
 [[bench]]
-name = "basic"
+name = "basic_bench"
 harness = false
 
 [[bench]]
-name = "sorted"
+name = "sorted_bench"
 harness = false
 
 [[bench]]
-name = "entries"
+name = "entries_bench"
 harness = false
 
 [[bench]]
-name = "comparison"
+name = "comparison_bench"
 harness = false

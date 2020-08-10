@@ -69,46 +69,28 @@ impl Entries {
     pub fn remove(&mut self, (row, col): Location, n: usize) -> Vec<Location> {
         let mut changed = Vec::new();
         for i in 0..9 {
-            self.entries[row][i].possibles = match self.entries[row][i].possibles.take() {
-                Some(mut v) => {
-                    if let Some(index) = v.iter().position(|&x| x == n) {
-                        changed.push((row, i));
-                        v.remove(index);
-                        Some(v)
-                    } else {
-                        Some(v)
-                    }
-                },
-                None => None,
+            if let Some(ref mut v) = self.entries[row][i].possibles {
+                if let Some(index) = v.iter().position(|&x| x == n) {
+                    changed.push((row, i));
+                    v.remove(index);
+                }
             };
-            self.entries[i][col].possibles = match self.entries[i][col].possibles.take() {
-                Some(mut v) => {
-                    if let Some(index) = v.iter().position(|&x| x == n) {
-                        changed.push((i, col));
-                        v.remove(index);
-                        Some(v)
-                    } else {
-                        Some(v)
-                    }
-                },
-                None => None,
+            if let Some(ref mut v) = self.entries[i][col].possibles {
+                if let Some(index) = v.iter().position(|&x| x == n) {
+                    changed.push((i, col));
+                    v.remove(index);
+                }
             };
         }
         let y = row / 3 * 3;
         let x = col / 3 * 3;
         for i in 0..3 {
             for j in 0..3 {
-                self.entries[y+i][x+j].possibles = match self.entries[y+i][x+j].possibles.take() {
-                    Some(mut v) => {
-                        if let Some(index) = v.iter().position(|&x| x == n) {
-                            changed.push((y+i, x+j));
-                            v.remove(index);
-                            Some(v)
-                        } else {
-                            Some(v)
-                        }
-                    },
-                    None => None,
+                if let Some(ref mut v) = self.entries[y+i][x+j].possibles {
+                    if let Some(index) = v.iter().position(|&x| x == n) {
+                        changed.push((y+i, x+j));
+                        v.remove(index);
+                    }
                 };
             }
         }
@@ -128,7 +110,6 @@ impl Entries {
                 }
             }
         }
-        // avoid cloning?
         inds.map(|(i, j)| (i, j, self.entries[i][j].possibles.clone().unwrap()))
     }
 }
@@ -142,19 +123,6 @@ impl Entry {
         match self.possibles {
             Some(ref v) => v.len(),
             None => usize::MAX,
-        }
-    }
-}
-
-impl PartialEq<Entry> for Entry {
-    fn eq(&self, other: &Entry) -> bool {
-        let s = self.possibles.clone().map(|mut ps| ps.sort());
-        let o = other.possibles.clone().map(|mut ps| ps.sort());
-        if s == o {
-            true
-        } else {
-            println!("Not equal!");
-            false
         }
     }
 }

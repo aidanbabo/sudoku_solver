@@ -30,16 +30,13 @@ pub(crate) fn possibles(table: &Table, (y, x): Location) -> Vec<usize> {
             seen.push(table[i][x]);
         }
     }
-    let sy = y / 3;
-    let sx = x / 3;
-    // let py = y % 3;
-    // let py = y % 3;
-    // Until we only look at each square once, we need another if
+    let y = y / 3 * 3;
+    let x = x / 3 * 3;
     for i in 0..3 {
         for j in 0..3 {
-            if table[sy+i][sx+j] != 0 {
-                if !seen.contains(&table[sy+i][sx+j]) {
-                    seen.push(table[sy+i][sx+j])
+            if table[y+i][x+j] != 0 {
+                if !seen.contains(&table[y+i][x+j]) {
+                    seen.push(table[y+i][x+j])
                 }
             }
         }
@@ -101,9 +98,12 @@ impl Iterator for Possibles {
         None
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // All of these pass, yet actually using `fn possibles` doesn't work
 
     #[test]
     fn possibles_works() {
