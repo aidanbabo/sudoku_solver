@@ -24,7 +24,7 @@ fn next_best(table: &Table) -> Option<(usize, usize, Vec<usize>)> {
         for x in 0..9 {
             if table[y][x] == 0 {
                 buf.clear();
-                buf.extend(Possibles::iter(table.clone(), y, x));
+                buf.extend(Possibles::iter(table.clone(), (y, x)));
                 if buf.len() < length {
                     length = buf.len();
                     ret = Some((y, x, buf.drain(..).collect()));

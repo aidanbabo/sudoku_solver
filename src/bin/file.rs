@@ -1,4 +1,4 @@
-use sudoku::solvers::basic::solve;
+use sudoku::solvers::entries::solve;
 use sudoku::pint;
 use sudoku::file_reader::Sudokus;
 
