@@ -1,11 +1,11 @@
 use crate::Table;
 use crate::solvers::basic::Possibles;
 
-pub fn sudoku(table: &mut Table) -> bool {
+pub fn solve(table: &mut Table) -> bool {
     if let Some((y, x, v)) = next_best(table) {
         for p in v {
             table[y][x] = p;
-            if sudoku(table) {
+            if solve(table) {
                 return true;
             }
             table[y][x] = 0;

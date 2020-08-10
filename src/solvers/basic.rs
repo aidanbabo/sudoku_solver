@@ -1,13 +1,13 @@
 use crate::Table;
 
-pub fn sudoku(table: &mut Table) -> bool {
+pub fn solve(table: &mut Table) -> bool {
     for y in 0..9 {
         for x in 0..9 {
             if table[y][x] == 0 {
                 for p in Possibles::iter(table.clone(), y, x) {
                 // for p in possibles(table, y, x) {
                     table[y][x] = p;
-                    if sudoku(table) {
+                    if solve(table) {
                         return true;
                     }
                     table[y][x] = 0;
@@ -61,6 +61,24 @@ fn possibles_works() {
         [9, 8, 7, 6, 5, 4, 3, 2, 1],
     ];
     let ps = possibles(&ONLINE, 0, 2);
+    assert_eq!([2, 3, 5], *ps);
+}
+
+#[test]
+#[allow(non_snake_case)]
+fn Possibls_works() {
+    const ONLINE: Table = [
+        [1, 4, 0, 0, 0, 0, 0, 0, 6],
+        [0, 0, 8, 0, 0, 0, 0, 0, 3],
+        [7, 0, 0, 4, 0, 0, 0, 0, 5],
+        [0, 0, 0, 0, 4, 0, 0, 0, 8],
+        [0, 1, 0, 0, 0, 3, 0, 0, 9],
+        [4, 0, 9, 0, 6, 5, 0, 0, 2],
+        [0, 0, 0, 0, 0, 1, 9, 0, 7],
+        [3, 2, 0, 0, 0, 0, 0, 0, 4],
+        [9, 8, 7, 6, 5, 4, 3, 2, 1],
+    ];
+    let ps: Vec<_> = Possibles::iter(ONLINE, 0, 2).collect();
     assert_eq!([2, 3, 5], *ps);
 }
 

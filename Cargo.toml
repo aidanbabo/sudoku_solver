@@ -8,3 +8,22 @@ default-run = "file"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "basic"
+harness = false
+
+[[bench]]
+name = "sorted"
+harness = false
+
+[[bench]]
+name = "entries"
+harness = false
+
+[[bench]]
+name = "comparison"
+harness = false

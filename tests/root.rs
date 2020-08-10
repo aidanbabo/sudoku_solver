@@ -1,29 +1,5 @@
 use sudoku::solvers::{basic, entries, sorted};
-use sudoku::Table;
-
-const ONLINE: Table = [
-    [1, 4, 0, 0, 0, 0, 0, 0, 6],
-    [0, 0, 8, 0, 0, 0, 0, 0, 3],
-    [7, 0, 0, 4, 0, 0, 0, 0, 5],
-    [0, 0, 0, 0, 4, 0, 0, 0, 8],
-    [0, 1, 0, 0, 0, 3, 0, 0, 9],
-    [4, 0, 9, 0, 6, 5, 0, 0, 2],
-    [0, 0, 0, 0, 0, 1, 9, 0, 7],
-    [3, 2, 0, 0, 0, 0, 0, 0, 4],
-    [9, 8, 7, 6, 5, 4, 3, 2, 1],
-];
-
-const JON: Table = [
-    [4, 0, 0, 0, 5, 0, 8, 0, 0], 
-    [0, 1, 8, 0, 0, 0, 7, 0, 0], 
-    [0, 0, 3, 0, 0, 4, 0, 0, 0], 
-    [9, 6, 0, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 5, 0, 0, 3, 0, 0, 0], 
-    [0, 7, 0, 0, 0, 8, 0, 6, 0], 
-    [0, 0, 1, 6, 0, 0, 0, 0, 4], 
-    [0, 0, 0, 5, 0, 0, 0, 1, 3], 
-    [0, 0, 0, 8, 0, 0, 0, 0, 0], 
-];
+use sudoku::{ONLINE, JON, Table};
 
 // Tested. Works. Removing test cause it clouds output up
 fn is_valid(table: &Table) -> bool {
@@ -62,41 +38,41 @@ fn is_valid(table: &Table) -> bool {
 #[test]
 fn online_basic() {
     let mut s = ONLINE;
-    basic::sudoku(&mut s);
+    basic::solve(&mut s);
     assert!(is_valid(&s));
 }
 
 #[test]
 fn jon_basic() {
     let mut s = JON;
-    basic::sudoku(&mut s);
+    basic::solve(&mut s);
     assert!(is_valid(&s));
 }
 
 #[test]
 fn online_sorted() {
     let mut s = ONLINE;
-    sorted::sudoku(&mut s);
+    sorted::solve(&mut s);
     assert!(is_valid(&s));
 }
 
 #[test]
 fn jon_sorted() {
     let mut s = JON;
-    sorted::sudoku(&mut s);
+    sorted::solve(&mut s);
     assert!(is_valid(&s));
 }
 
 #[test]
 fn online_entries() {
     let mut s = ONLINE;
-    entries::sudoku(&mut s);
+    entries::solve(&mut s);
     assert!(is_valid(&s));
 }
 
 #[test]
 fn jon_entries() {
     let mut s = JON;
-    entries::sudoku(&mut s);
+    entries::solve(&mut s);
     assert!(is_valid(&s));
 }

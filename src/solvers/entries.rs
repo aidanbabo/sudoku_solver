@@ -2,17 +2,17 @@ use std::mem::{self, MaybeUninit};
 use crate::Table;
 use crate::solvers::basic::Possibles;
 
-pub fn sudoku(table: &mut Table) -> bool {
+pub fn solve(table: &mut Table) -> bool {
     let mut entries = Entries::from_table(table);
-    solve(table, &mut entries)
+    rec(table, &mut entries)
 }
 
-fn solve(table: &mut Table, entries: &mut Entries) -> bool {
+fn rec(table: &mut Table, entries: &mut Entries) -> bool {
     if let Some((y, x, v)) = entries.min() {
         for p in v {
             table[y][x] = p; 
             entries.update(table, (y, x));
-            if solve(table, entries) {
+            if rec(table, entries) {
                 return true;
             }
             table[y][x] = 0;
