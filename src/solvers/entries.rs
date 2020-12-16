@@ -1,6 +1,6 @@
-use std::mem::{self, MaybeUninit};
+use super::possibles;
 use crate::{Location, Table};
-use crate::solvers::basic::Possibles;
+use std::mem::{self, MaybeUninit};
 
 pub fn solve(table: &mut Table) -> bool {
     let mut entries = Entries::from_table(table);
@@ -11,7 +11,7 @@ fn rec(table: &mut Table, entries: &mut Entries) -> bool {
     if let Some((y, x, v)) = entries.min() {
         let taken = entries.take_entry_possibles((y, x));
         for p in v {
-            table[y][x] = p; 
+            table[y][x] = p;
             let replacements = entries.remove((y, x), p);
             if rec(table, entries) {
                 return true;
@@ -35,11 +35,14 @@ impl Entries {
         // Some unsafe code to incrementally initialize the array
         Entries {
             entries: {
-                let mut entries: [[MaybeUninit<Entry>; 9]; 9] = unsafe { MaybeUninit::uninit().assume_init() };
+                let mut entries: [[MaybeUninit<Entry>; 9]; 9] =
+                    unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..entries.len() {
                     for j in 0..entries[i].len() {
                         entries[i][j] = if table[i][j] == 0 {
-                            MaybeUninit::new(Entry { possibles: Some(Possibles::iter(table.clone(), (i, j)).collect()) })
+                            MaybeUninit::new(Entry {
+                                possibles: Some(possibles(table, (i, j)).collect()),
+                            })
                         } else {
                             MaybeUninit::new(Entry { possibles: None })
                         }
@@ -60,9 +63,9 @@ impl Entries {
 
     pub fn add_back(&mut self, changed: Vec<Location>, n: usize) {
         for (row, col) in changed {
-            let mut replacement = self.entries[row][col].possibles.take().unwrap();
-            replacement.push(n);
-            self.entries[row][col].possibles = Some(replacement);
+            if let Some(ref mut v) = self.entries[row][col].possibles {
+                v.push(n);
+            }
         }
     }
 
@@ -86,9 +89,9 @@ impl Entries {
         let x = col / 3 * 3;
         for i in 0..3 {
             for j in 0..3 {
-                if let Some(ref mut v) = self.entries[y+i][x+j].possibles {
+                if let Some(ref mut v) = self.entries[y + i][x + j].possibles {
                     if let Some(index) = v.iter().position(|&x| x == n) {
-                        changed.push((y+i, x+j));
+                        changed.push((y + i, x + j));
                         v.remove(index);
                     }
                 };

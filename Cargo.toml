@@ -8,22 +8,27 @@ default-run = "file"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+arrayvec = "0.5"
 
 [dev-dependencies]
 criterion = "0.3"
 
 [[bench]]
-name = "basic_bench"
+name = "basic"
 harness = false
 
 [[bench]]
-name = "sorted_bench"
+name = "sorted"
 harness = false
 
 [[bench]]
-name = "entries_bench"
+name = "entries"
 harness = false
 
 [[bench]]
-name = "comparison_bench"
+name = "arrayvec"
+harness = false
+
+[[bench]]
+name = "comparison"
 harness = false

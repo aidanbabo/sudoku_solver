@@ -1,5 +1,5 @@
-use sudoku::solvers::{basic, entries, sorted};
-use sudoku::{ONLINE, JON, Table};
+use sudoku::solvers::{arrayvec, basic, entries, sorted};
+use sudoku::{Table, JON, ONLINE};
 
 // Tested. Works. Removing test cause it clouds output up
 fn is_valid(table: &Table) -> bool {
@@ -25,7 +25,7 @@ fn is_valid(table: &Table) -> bool {
             let mut inner = Vec::with_capacity(9);
             for k in 0..3 {
                 for l in 0..3 {
-                    inner.push(table[i+k][j+l]);
+                    inner.push(table[i + k][j + l]);
                 }
             }
             inner.sort();
@@ -76,3 +76,52 @@ fn jon_entries() {
     entries::solve(&mut s);
     assert!(is_valid(&s));
 }
+
+#[test]
+fn online_arrayvec() {
+    let mut s = ONLINE;
+    arrayvec::solve(&mut s);
+    assert!(is_valid(&s));
+}
+
+#[test]
+fn jon_arrayvec() {
+    let mut s = JON;
+    arrayvec::solve(&mut s);
+    assert!(is_valid(&s));
+}
+
+// They aren't all necessarily equal
+/*
+#[test]
+fn online_all() {
+    let mut basic = ONLINE;
+    let mut sorted = ONLINE;
+    let mut entries = ONLINE;
+    let mut arrayvec = ONLINE;
+    basic::solve(&mut basic);
+    sorted::solve(&mut sorted);
+    entries::solve(&mut entries);
+    arrayvec::solve(&mut arrayvec);
+    assert_eq!(basic, sorted, "basic and sorted where not equal");
+    assert_eq!(sorted, entries, "sorted and entries where not equal");
+    assert_eq!(entries, arrayvec, "entries and arrayvec where not equal");
+    assert_eq!(arrayvec, basic, "arrayvec and basic where not equal");
+}
+
+#[test]
+fn jon_all() {
+    let mut basic = JON;
+    let mut sorted = JON;
+    let mut entries = JON;
+    let mut arrayvec = JON;
+    basic::solve(&mut basic);
+    sorted::solve(&mut sorted);
+    entries::solve(&mut entries);
+    arrayvec::solve(&mut arrayvec);
+    assert_eq!(basic, sorted, "basic and sorted where not equal");
+    assert_eq!(sorted, entries, "sorted and entries where not equal");
+    assert_eq!(entries, arrayvec, "entries and arrayvec where not equal");
+    assert_eq!(arrayvec, basic, "arrayvec and basic where not equal");
+}
+*/
